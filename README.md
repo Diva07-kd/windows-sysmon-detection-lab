@@ -120,7 +120,6 @@ Using Winlogbeat or the Wazuh agent, the Sysmon logs can be forwarded to generat
 Cybersecurity & SOC Enthusiast  
 Focused on Endpoint Detection, Windows Security, and Detection Engineering.
 
-If this project helped you, consider starring the repo!
 
 
 
