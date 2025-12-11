@@ -114,18 +114,6 @@ Using Winlogbeat or the Wazuh agent, the Sysmon logs can be forwarded to generat
 
 ---
 
-## ⚠️ Attribution
-
-This project contains customizations and additional detection work built on top of MIT-licensed Sysmon resources.
-
-Portions of the rule structure and Sysmon filtering approach are inspired by the MIT-licensed **sysmon-modular** project by Olaf Hartong:
-
-https://github.com/olafhartong/sysmon-modular
-
-All reused components retain MIT licensing inside `third_party/`.
-
----
-
 ## 👤 Author
 
 **Divakar (Diva07-kd)**  
