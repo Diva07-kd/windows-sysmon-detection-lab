@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Custom Ransomware Detection Rules
+Author: [Your Name]
+Purpose: Detect common ransomware execution patterns and behavior
+Based on: sysmon-modular framework
+Created: December 2025
+-->
+<Sysmon schemaversion="4.82">
+  <!-- RuleGroup for Ransomware Execution Pattern Detection -->
+  <EventFiltering>
+    <RuleGroup name="Ransomware Behavior Detection" groupRelation="or">
+      
+      <!-- Detect common ransomware file extensions being created -->
+      <FileCreate onmatch="include">
+        <TargetFilename condition="contains any">.locked;.encrypted;.crypt;.crypto;.ransomware;.krypted;.redacted;.payransom</TargetFilename>
+        <Description>Ransomware file extension detected</Description>
+      </FileCreate>
+
+      <!-- Detect mass file creation in user directories (potential file encryption) -->
+      <FileCreate onmatch="include">
+        <TargetFilename condition="contains">Documents\</TargetFilename>
+        <TargetFilename condition="contains">Desktop\</TargetFilename>
+        <User condition="is not">SYSTEM</User>
+        <Description>Mass file creation in user directories - potential encryption activity</Description>
+      </FileCreate>
+
+      <!-- Detect high-risk process combinations (executable in temp, network access) -->
+      <ProcessCreation onmatch="include">
+        <ParentImage condition="contains any">Temp;AppData\Local;ProgramData</ParentImage>
+        <CommandLine condition="contains any">cmd.exe;powershell.exe;psexec;wmic</CommandLine>
+        <Description>Suspicious process execution from temp/staging directory</Description>
+      </ProcessCreation>
+
+      <!-- Detect processes accessing Volume Shadow Copy (VSS) - common ransom activity -->
+      <ProcessCreation onmatch="include">
+        <CommandLine condition="contains any">vssadmin;wmic shadowcopy delete;diskshadow</CommandLine>
+        <Description>VSS/Shadow copy deletion attempt - ransomware preparation</Description>
+      </ProcessCreation>
+
+      <!-- Detect suspicious network connections from suspicious processes -->
+      <NetworkConnect onmatch="include">
+        <InitiatingProcessParentImage condition="contains any">Temp;AppData\Local;Downloads</InitiatingProcessParentImage>
+        <DestinationPort condition="is">445</DestinationPort>
+        <Description>Network share access from suspicious process location</Description>
+      </NetworkConnect>
+
+      <!-- Detect MBR/Boot sector modifications -->
+      <RawAccessRead onmatch="include">
+        <Device condition="is">\\.\PhysicalDrive0</Device>
+        <Description>Boot sector/MBR access - possible bootkit/ransomware</Description>
+      </RawAccessRead>
+
+    </RuleGroup>
+  </EventFiltering>
+</Sysmon>
